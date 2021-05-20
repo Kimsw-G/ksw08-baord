@@ -11,4 +11,5 @@ public class BoardVO {
     private String ctnt;
     private int iuser;
     private String regdt;
+    private String unm;
 }

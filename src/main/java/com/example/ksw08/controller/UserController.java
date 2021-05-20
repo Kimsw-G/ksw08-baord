@@ -5,6 +5,7 @@ import com.example.ksw08.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,30 +22,36 @@ public class UserController {
     UserDAO userDAO;
 
     @RequestMapping(value = "/login",method = RequestMethod.GET)
-    public String logingPage(@RequestParam("errMsg") String errMsg, Model model){
+    public String loginPage(Model model,
+                            @RequestParam(value = "errMsg",required = false)String errMsg){
         model.addAttribute("errMsg",errMsg);
+
         return "/user/userLogin";
     }
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public String loginTry(HttpServletRequest request, RedirectAttributes redirect, UserVO paramVO){
+    public String loginTry(HttpServletRequest request, Model model, UserVO paramVO){
         // get userInfo form uid
         UserVO result = userDAO.selectUser(paramVO);
 
         if(result==null){ // no id
-            redirect.addAttribute("errMsg","NO ID!");
-        } else if(upw.equals(result.getUpw())){
+            return "redirect:login?errMsg=NO ID!";
+        } else if(paramVO.getUpw().equals(result.getUpw())){
             System.out.println("success login!!");
             result.setUpw(null);
             HttpSession hs = request.getSession();
             hs.setAttribute("loginUser",result);
             return "forward:/board/list";
         } else {
-            redirect.addAttribute("errMsg","WrongPW!");
+            return "redirect:login?errMsg=WrongPW";
         }
-        System.out.println("fail login");
-        return "redirect:login";
 
+    }
+
+    @RequestMapping(value = "logout",method = RequestMethod.GET)
+    public String logout(HttpSession session){
+        session.invalidate();
+        return "redirect:login";
     }
 
 }
