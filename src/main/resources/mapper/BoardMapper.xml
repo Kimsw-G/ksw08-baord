@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.ksw08.dao.BoardDAO">
+    <select id="selectBoardList" resultType="BoardVO">
+        SELECT A.iboard, A.title, A.iuser, A.regdt, B.unm
+        FROM t_board A
+        INNER JOIN t_user B
+        ON A.iuser = B.iuser
+        ORDER BY iboard DESC
+    </select>
+
+    <select id="selectBoard" parameterType="BoardVO" resultType="BoardVO">
+        SELECT B.unm, A.iboard, A.title, A.ctnt, A.iuser, A.regdt
+        FROM t_board A
+		INNER JOIN t_user B
+		ON A.iuser = B.iuser
+		WHERE A.iboard = #{iboard}
+    </select>
+</mapper>
